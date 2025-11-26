@@ -15,6 +15,13 @@ connectionDb();
 import { errorMiddleware } from './app/middleware/errorMiddleware';
 app.use(errorMiddleware);
 
+if (process.env.NODE_ENV !== 'test') {
+    connectionDb().catch(err => {
+        console.error('Database connection error:', err);
+        process.exit(1);
+    });
+}
+
 const swaggerFilePath = path.join(__dirname, "swagger.json");
 const swaggerDocument = JSON.parse(fs.readFileSync(swaggerFilePath, "utf-8"));
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
@@ -34,3 +41,4 @@ app.use("/api/tasks",Taskrouter);
 app.listen(5001,()=>{
     console.log("Server port is 5001")
 })
+export default app;
